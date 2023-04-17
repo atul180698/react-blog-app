@@ -67,6 +67,14 @@ export const updateBlogController = async (req, res) => {
             case image && image.size > 1000000:
                 return res.send({ message: "Image is required and should bes less than 1mb" })
         }
+        //check existing blog with same title
+        const existingBlog = await blogModel.findOne({ slug: slugify(title.toLowerCase()) })
+        if (existingBlog) {
+            return res.send({
+                success: false,
+                message: "Please select a different Title Name"
+            })
+        }
         //find and update blog on the basis of id
         const blogs = await blogModel.findByIdAndUpdate(req.params.bid, { ...req.fields, slug: slugify(title.toLowerCase()) }, { new: true })
         if (image) {
